@@ -29,19 +29,19 @@ Proyek ini dibuat untuk memenuhi syarat Ujian Akhir Semester (UAS) pada mata kul
 ## 📸 Dokumentasi & Screenshot
 
 ### 1. Skema Relasi Database
-![Skema Relasi Database](docs/screenshots/databasescheme.png)
+![Skema Relasi Database](/docs/database/screenshot/databasescheme.png)
 
 ### 2. Uji Coba API Proteksi Token (Error 401 Unauthorized via Postman)
-![Uji Coba Gagal 401 Postman](docs/screenshots/postman-401-error.png)
+![Uji Coba Gagal 401 Postman](docs/database/screenshot/postman-401-error.png)
 
 ### 3. Antarmuka Halaman Login (Frontend)
-![Halaman Login](docs/screenshots/login.png)
+![Halaman Login](docs/database/screenshot/login.png)
 
 ### 4. Dashboard Admin & Visualisasi Data
-![Dashboard Admin](docs/screenshots/admin-dashboard.png)
+![Dashboard Admin](docs/database/screenshot/admin-dashboard.png)
 
 ### 5. Form Modal Tambah/Edit Data
-![Modal CRUD](docs/screenshots/crud.png)
+![Modal CRUD](docs/database/screenshot/crud.png)
 
 ---
 
