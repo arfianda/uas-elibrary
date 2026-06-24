@@ -22,7 +22,7 @@ Proyek ini dibuat untuk memenuhi syarat Ujian Akhir Semester (UAS) pada mata kul
 
 ## 🌐 Tautan Penting
 * **Demo Aplikasi (Live)**: [https://arfiandaworks.my.id/elibrary/](https://arfiandaworks.my.id/elibrary/)
-* **Video Presentasi Proyek (YouTube)**: *[Link Video YouTube Menyusul]* <!-- Ganti baris ini dengan link YouTube Anda -->
+* **Video Presentasi Proyek (YouTube)**: [https://youtu.be/O2gKUW6injc](https://youtu.be/O2gKUW6injc)
 
 ---
 
