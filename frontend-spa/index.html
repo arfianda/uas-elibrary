@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Read Rent Fun - E-Library & Komik Digital</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Axios CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Vue 3 and Vue Router 4 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue-router@4/dist/vue-router.global.js"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: "#f4f6fe",
+                100: "#ebf0ff",
+                200: "#d7e1ff",
+                300: "#b4c9ff",
+                400: "#89a7ff",
+                500: "#5c7cff",
+                600: "#3b54fc",
+                700: "#2c3cf0",
+                800: "#2330c2",
+                900: "#1b228b",
+                accent: "#8b5cf6", // Violet Accent
+              },
+              darkbg: "#0f172a",
+              darkcard: "#1e293b",
+              glass: "rgba(255, 255, 255, 0.08)",
+              glassdark: "rgba(15, 23, 42, 0.6)",
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Outfit", "sans-serif"],
+            },
+            boxShadow: {
+              neon: "0 0 15px rgba(92, 124, 252, 0.3)",
+              "neon-violet": "0 0 15px rgba(139, 92, 246, 0.3)",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col selection:bg-brand-500 selection:text-white"
+  >
+    <!-- APP ROOT -->
+    <div id="app" class="flex flex-col min-h-screen">
+      <!-- Navigation Bar -->
+      <nav
+        class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/80 transition-all duration-300"
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+              <router-link to="/" class="flex items-center space-x-2">
+                <div
+                  class="bg-gradient-to-tr from-brand-600 to-brand-accent p-2 rounded-xl text-white shadow-neon flex items-center justify-center"
+                >
+                  <i class="fa-solid fa-book-open-reader text-lg"></i>
+                </div>
+                <span
+                  class="font-display font-bold text-xl tracking-tight bg-gradient-to-r from-brand-700 to-brand-accent bg-clip-text text-transparent"
+                >
+                  ReadRent<span class="text-brand-600 font-extrabold font-sans"
+                    >Fun</span
+                  >
+                </span>
+              </router-link>
+            </div>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center space-x-4">
+              <router-link
+                to="/"
+                class="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+                :class="$route.path === '/' ? 'bg-brand-50 text-brand-600' : 'text-slate-600 hover:text-brand-600 hover:bg-slate-50'"
+              >
+                <i class="fa-solid fa-cubes-stacked mr-1"></i> Catalog
+              </router-link>
+
+              <!-- Logged in routes -->
+              <template v-if="isLoggedIn">
+                <router-link
+                  to="/dashboard"
+                  class="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+                  :class="$route.path === '/dashboard' ? 'bg-brand-50 text-brand-600' : 'text-slate-600 hover:text-brand-600 hover:bg-slate-50'"
+                >
+                  <i
+                    class="fa-solid mr-1"
+                    :class="user?.role === 'admin' ? 'fa-chart-line' : 'fa-book-open-reader'"
+                  ></i>
+                  {{ user?.role === 'admin' ? 'Dashboard' : 'My Rentals' }}
+                </router-link>
+                <template v-if="user?.role === 'admin'">
+                  <router-link
+                    to="/books"
+                    class="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+                    :class="$route.path === '/books' ? 'bg-brand-50 text-brand-600' : 'text-slate-600 hover:text-brand-600 hover:bg-slate-50'"
+                  >
+                    <i class="fa-solid fa-book-bookmark mr-1"></i> Manage Books
+                  </router-link>
+                  <router-link
+                    to="/genres"
+                    class="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+                    :class="$route.path === '/genres' ? 'bg-brand-50 text-brand-600' : 'text-slate-600 hover:text-brand-600 hover:bg-slate-50'"
+                  >
+                    <i class="fa-solid fa-tags mr-1"></i> Genres
+                  </router-link>
+                </template>
+
+                <!-- Divider -->
+                <span class="h-6 w-px bg-slate-200 block"></span>
+
+                <div class="flex items-center space-x-3">
+                  <span
+                    class="text-xs font-semibold text-slate-700 bg-slate-100 px-3 py-1.5 rounded-full flex items-center"
+                  >
+                    <i class="fa-solid fa-user text-xs mr-2 text-brand-500"></i
+                    >{{ user?.username }} ({{ user?.role }})
+                  </span>
+                  <button
+                    @click="logout"
+                    class="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition-all duration-200 hover:shadow flex items-center"
+                  >
+                    <i class="fa-solid fa-right-from-bracket mr-2"></i>Logout
+                  </button>
+                </div>
+              </template>
+
+              <template v-else>
+                <router-link
+                  to="/login"
+                  class="text-slate-600 hover:text-brand-600 font-semibold text-sm px-3.5 py-2 rounded-xl hover:bg-slate-50 transition"
+                >
+                  Sign In
+                </router-link>
+                <router-link
+                  to="/register"
+                  class="bg-gradient-to-r from-brand-600 to-brand-accent hover:from-brand-700 hover:to-violet-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-neon transition-all duration-200 hover:-translate-y-0.5 flex items-center"
+                >
+                  <i class="fa-solid fa-user-plus mr-2 text-xs"></i>Register
+                </router-link>
+              </template>
+            </div>
+
+            <!-- Mobile menu button -->
+            <div class="md:hidden flex items-center">
+              <button
+                @click="mobileMenuOpen = !mobileMenuOpen"
+                class="inline-flex items-center justify-center p-2 rounded-lg text-slate-500 hover:text-slate-600 hover:bg-slate-100 focus:outline-none transition duration-200"
+              >
+                <i
+                  :class="mobileMenuOpen ? 'fa-solid fa-xmark text-lg' : 'fa-solid fa-bars text-lg'"
+                ></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div
+          v-show="mobileMenuOpen"
+          class="md:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-4 space-y-1 transition duration-200"
+        >
+          <router-link
+            to="/"
+            @click="mobileMenuOpen = false"
+            class="block px-3 py-2 rounded-lg text-base font-medium transition duration-200"
+            :class="$route.path === '/' ? 'bg-brand-50 text-brand-600' : 'text-slate-600 hover:bg-slate-50'"
+          >
+            <i class="fa-solid fa-cubes-stacked mr-2"></i>Catalog
+          </router-link>
+          <template v-if="isLoggedIn">
+            <router-link
+              to="/dashboard"
+              @click="mobileMenuOpen = false"
+              class="block px-3 py-2 rounded-lg text-base font-medium transition duration-200"
+              :class="$route.path === '/dashboard' ? 'bg-brand-50 text-brand-600' : 'text-slate-600 hover:bg-slate-50'"
+            >
+              <i
+                class="fa-solid mr-2"
+                :class="user?.role === 'admin' ? 'fa-chart-line' : 'fa-book-open-reader'"
+              ></i>
+              {{ user?.role === 'admin' ? 'Dashboard' : 'My Rentals' }}
+            </router-link>
+            <template v-if="user?.role === 'admin'">
+              <router-link
+                to="/books"
+                @click="mobileMenuOpen = false"
+                class="block px-3 py-2 rounded-lg text-base font-medium transition duration-200"
+                :class="$route.path === '/books' ? 'bg-brand-50 text-brand-600' : 'text-slate-600 hover:bg-slate-50'"
+              >
+                <i class="fa-solid fa-book-bookmark mr-2"></i>Manage Books
+              </router-link>
+              <router-link
+                to="/genres"
+                @click="mobileMenuOpen = false"
+                class="block px-3 py-2 rounded-lg text-base font-medium transition duration-200"
+                :class="$route.path === '/genres' ? 'bg-brand-50 text-brand-600' : 'text-slate-600 hover:bg-slate-50'"
+              >
+                <i class="fa-solid fa-tags mr-2"></i>Genres
+              </router-link>
+            </template>
+            <div class="pt-4 border-t border-slate-100 flex flex-col space-y-2">
+              <span
+                class="text-sm font-medium text-slate-600 px-3 flex items-center"
+              >
+                <i class="fa-solid fa-user mr-2 text-brand-500"></i>Logged in:
+                {{ user?.username }} ({{ user?.role }})
+              </span>
+              <button
+                @click="logout(); mobileMenuOpen = false"
+                class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-base font-medium transition duration-200 flex items-center justify-center"
+              >
+                <i class="fa-solid fa-right-from-bracket mr-2"></i>Logout
+              </button>
+            </div>
+          </template>
+          <template v-else>
+            <div class="flex flex-col space-y-2">
+              <router-link
+                to="/login"
+                @click="mobileMenuOpen = false"
+                class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-base font-medium transition duration-200 flex items-center justify-center"
+              >
+                Sign In
+              </router-link>
+              <router-link
+                to="/register"
+                @click="mobileMenuOpen = false"
+                class="w-full bg-brand-600 hover:bg-brand-700 text-white px-4 py-2.5 rounded-xl text-base font-medium transition duration-200 flex items-center justify-center"
+              >
+                <i class="fa-solid fa-user-plus mr-2 text-sm"></i>Register
+              </router-link>
+            </div>
+          </template>
+        </div>
+      </nav>
+
+      <!-- Global Toast Alert -->
+      <div
+        v-if="toast"
+        class="fixed top-20 right-4 z-50 transition-all duration-300 max-w-sm"
+      >
+        <div
+          class="flex items-center p-4 rounded-2xl shadow-lg border text-sm"
+          :class="toast.type === 'error' ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800'"
+        >
+          <i
+            class="fa-solid mr-3 text-lg"
+            :class="toast.type === 'error' ? 'fa-circle-xmark text-rose-500' : 'fa-circle-check text-emerald-500'"
+          ></i>
+          <div>
+            <p class="font-semibold">
+              {{ toast.title || (toast.type === 'error' ? 'Error' : 'Success')
+              }}
+            </p>
+            <p class="text-xs opacity-90">{{ toast.message }}</p>
+          </div>
+          <button
+            @click="toast = null"
+            class="ml-auto text-slate-400 hover:text-slate-600 pl-4"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- MAIN ROUTER VIEW -->
+      <main class="flex-grow">
+        <router-view v-slot="{ Component }">
+          <transition name="fade" mode="out-in">
+            <component :is="Component" />
+          </transition>
+        </router-view>
+      </main>
+
+      <!-- FOOTER -->
+      <footer
+        class="bg-slate-900 text-slate-400 border-t border-slate-800 py-8"
+      >
+        <div
+          class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0"
+        >
+          <div class="flex items-center space-x-2">
+            <div class="bg-white/10 p-1.5 rounded-lg text-white">
+              <i class="fa-solid fa-book-open-reader text-sm"></i>
+            </div>
+            <span
+              class="font-display font-bold text-sm tracking-tight text-white"
+            >
+              ReadRent<span class="text-brand-400">Fun</span>
+            </span>
+          </div>
+          <p class="text-xs">
+            &copy; 2026 Read Rent Fun E-Library. All rights reserved. Built for
+            Tugas UAS Pemrograman Web 2.
+          </p>
+          <div class="flex space-x-4 text-sm">
+            <a href="#" class="hover:text-white transition duration-200"
+              ><i class="fa-brands fa-github"></i
+            ></a>
+            <a href="#" class="hover:text-white transition duration-200"
+              ><i class="fa-solid fa-circle-info"></i
+            ></a>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- ROUTER FADE TRANSITIONS STYLING (Vanilla allowed inside HTML style tag as per stack guidelines) -->
+    <style>
+      .fade-enter-active,
+      .fade-leave-active {
+        transition: opacity 0.2s ease;
+      }
+      .fade-enter-from,
+      .fade-leave-to {
+        opacity: 0;
+      }
+      option {
+        background-color: #ffffff !important;
+        color: #1e293b !important;
+      }
+    </style>
+
+    <!-- ES MODULE INJECTION & VUE ROUTER INITIALIZATION -->
+    <script type="module">
+      // Configure Axios baseURL pointing to CI4 Server
+      axios.defaults.baseURL = "http://localhost:8080/";
+
+      // Component Imports (using absolute URLs relative to this domain server root)
+      import Home from "./components/Home.js";
+      import Login from "./components/Login.js";
+      import Register from "./components/Register.js";
+      import Dashboard from "./components/Dashboard.js";
+      import Books from "./components/Books.js";
+      import Genres from "./components/Genres.js";
+
+      // Route Definitions
+      const routes = [
+        { path: "/", component: Home, name: "home" },
+        { path: "/login", component: Login, name: "login" },
+        { path: "/register", component: Register, name: "register" },
+        {
+          path: "/dashboard",
+          component: Dashboard,
+          name: "dashboard",
+          meta: { requiresAuth: true },
+        },
+        {
+          path: "/books",
+          component: Books,
+          name: "books",
+          meta: { requiresAuth: true },
+        },
+        {
+          path: "/genres",
+          component: Genres,
+          name: "genres",
+          meta: { requiresAuth: true },
+        },
+      ];
+
+      const router = VueRouter.createRouter({
+        history: VueRouter.createWebHashHistory(),
+        routes,
+      });
+
+      // Navigation Guards (Client-Side Security)
+      router.beforeEach((to, from, next) => {
+        const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+        if (to.meta.requiresAuth && !isLoggedIn) {
+          // Redirect to Login if not logged in
+          next({ name: "login" });
+        } else {
+          next();
+        }
+      });
+
+      // Create Main Vue App
+      const { createApp, ref, computed } = Vue;
+
+      const app = createApp({
+        setup() {
+          const mobileMenuOpen = ref(false);
+          const toast = ref(null);
+
+          const loggedIn = ref(localStorage.getItem("isLoggedIn") === "true");
+          const currentUser = ref(null);
+          try {
+            const userStr = localStorage.getItem("user");
+            if (userStr) currentUser.value = JSON.parse(userStr);
+          } catch (e) {}
+
+          const isLoggedIn = computed(() => loggedIn.value);
+          const user = computed(() => currentUser.value);
+
+          // Trigger helper to show success/error feedback
+          const showToast = (title, message, type = "success") => {
+            toast.value = { title, message, type };
+            setTimeout(() => {
+              toast.value = null;
+            }, 4000);
+          };
+
+          const logout = () => {
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            loggedIn.value = false;
+            currentUser.value = null;
+            showToast(
+              "Logged Out",
+              "Your session has been terminated.",
+              "success",
+            );
+            router.push({ name: "login" });
+          };
+
+          // Expose to layout template
+          return {
+            mobileMenuOpen,
+            isLoggedIn,
+            user,
+            loggedIn,
+            currentUser,
+            logout,
+            toast,
+            showToast,
+          };
+        },
+      });
+
+      // Axios Interceptors (Request Injector & Global 401 Interceptor)
+      app.config.globalProperties.$axios = axios;
+
+      axios.interceptors.request.use(
+        (config) => {
+          const token = localStorage.getItem("token");
+          if (token) {
+            config.headers["Authorization"] = `Bearer ${token}`;
+          }
+          return config;
+        },
+        (error) => {
+          return Promise.reject(error);
+        },
+      );
+
+      axios.interceptors.response.use(
+        (response) => {
+          return response;
+        },
+        (error) => {
+          if (error.response && error.response.status === 401) {
+            // Intercept 401 Unauthorized
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+
+            // Show notification and redirect
+            alert("Session expired or unauthorized. Please log in again.");
+            window.location.hash = "/login";
+          }
+          return Promise.reject(error);
+        },
+      );
+
+      app.use(router);
+      app.mount("#app");
+    </script>
+  </body>
+</html>
