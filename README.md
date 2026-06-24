@@ -27,27 +27,21 @@ Proyek ini dibuat untuk memenuhi syarat Ujian Akhir Semester (UAS) pada mata kul
 ---
 
 ## 📸 Dokumentasi & Screenshot
-*(Silakan ganti path berkas gambar di bawah ini dengan screenshot hasil pengerjaan Anda)*
 
 ### 1. Skema Relasi Database
-![Skema Relasi Database](docs/screenshots/database-relation.png)
-*Screenshot rancangan tabel `users`, `genres`, `books`, dan `rentals` pada menu Designer phpMyAdmin.*
+![Skema Relasi Database](docs/screenshots/databasescheme.png)
 
 ### 2. Uji Coba API Proteksi Token (Error 401 Unauthorized via Postman)
 ![Uji Coba Gagal 401 Postman](docs/screenshots/postman-401-error.png)
-*Tangkapan layar ketika mencoba melakukan request mutasi data (seperti POST/PUT/DELETE) ke endpoint backend tanpa menyertakan Authorization Bearer Token.*
 
 ### 3. Antarmuka Halaman Login (Frontend)
-![Halaman Login](docs/screenshots/login-page.png)
-*Tampilan form login admin yang ditenagai TailwindCSS dan divalidasi Axios.*
+![Halaman Login](docs/screenshots/login.png)
 
 ### 4. Dashboard Admin & Visualisasi Data
 ![Dashboard Admin](docs/screenshots/admin-dashboard.png)
-*Visualisasi statistik ringkasan data buku dan genre pada panel administrator.*
 
 ### 5. Form Modal Tambah/Edit Data
-![Modal CRUD](docs/screenshots/crud-modal.png)
-*Tampilan popup form modal interaktif untuk manipulasi data katalog secara real-time.*
+![Modal CRUD](docs/screenshots/crud.png)
 
 ---
 
